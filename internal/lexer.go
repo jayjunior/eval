@@ -3,51 +3,48 @@ package internal
 import (
 	"fmt"
 	"unicode"
+
+	"github.com/jayjunior/eval/internal/ast"
 )
 
-func Tokenize(input string) ([]Token, error) {
-	res := make([]Token, 0)
+func Tokenize(input string) ([]ast.Token, error) {
+	res := make([]ast.Token, 0)
 
 	for i := 0; i < len(input); {
 		token := input[i]
 		switch token {
 		case '+':
-			res = append(res, Token{string(token), Plus})
+			res = append(res, ast.Token{Literal: string(token), Token: ast.Plus})
 			i++
 			continue
 		case '-':
-			res = append(res, Token{string(token), Minus})
+			res = append(res, ast.Token{Literal: string(token), Token: ast.Minus})
 			i++
 			continue
 
 		case '*':
-			res = append(res, Token{string(token), Multiplication})
+			res = append(res, ast.Token{Literal: string(token), Token: ast.Multiplication})
 			i++
 			continue
 
 		case '/':
-			res = append(res, Token{string(token), Division})
+			res = append(res, ast.Token{Literal: string(token), Token: ast.Division})
 			i++
 			continue
 
 		case '(':
-			res = append(res, Token{string(token), Open_Parentheses})
+			res = append(res, ast.Token{Literal: string(token), Token: ast.Open_Parentheses})
 			i++
 			continue
 
 		case ')':
-			res = append(res, Token{string(token), Close_Parentheses})
+			res = append(res, ast.Token{Literal: string(token), Token: ast.Close_Parentheses})
 			i++
 			continue
 
-		case '\t':
+		case '\t', ' ':
 			i++
 			continue
-
-		case ' ':
-			i++
-			continue
-
 		}
 		if unicode.IsDigit(rune(token)) {
 			digit := ""
@@ -55,12 +52,11 @@ func Tokenize(input string) ([]Token, error) {
 				digit += string(input[i])
 				i++
 			}
-			res = append(res, Token{digit, Number})
+			res = append(res, ast.Token{Literal: digit, Token: ast.Number})
 		} else {
 			return nil, fmt.Errorf("Unrecognized character at position %d", i)
 		}
 	}
 
 	return res, nil
-
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-
+	"github.com/jayjunior/eval/internal/visitors"
 	"github.com/jayjunior/eval/internal"
 )
 
@@ -27,10 +27,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	printer := internal.CreatePrinter()
+	printer := visitors.CreatePrinter()
 	printer.PrintAST(ast)
 
-	evaluator := internal.Evaluator{}
+	evaluator := visitors.Evaluator{}
 	res, err := evaluator.Evaluate(ast)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error evaluating the expression: %v\n", err)

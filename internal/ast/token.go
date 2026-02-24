@@ -1,9 +1,10 @@
-package internal
+package ast
 
 type TokenType string
+
 type Token struct {
-	token      string
-	token_type TokenType
+	Literal string
+	Token   TokenType
 }
 
 const (
@@ -13,5 +14,5 @@ const (
 	Division          TokenType = "/"
 	Open_Parentheses  TokenType = "("
 	Close_Parentheses TokenType = ")"
-	Number            TokenType = "\\d"
+	Number            TokenType = "\\d+"
 )
