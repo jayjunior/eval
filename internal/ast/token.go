@@ -18,4 +18,6 @@ const (
 	IDENTIFIER_LITERAL TokenType = "_[a-zA-Z]"
 	EQUAL              TokenType = "="
 	VAR                TokenType = "var"
+	TRUE               TokenType = "true"
+	FALSE              TokenType = "false"
 )

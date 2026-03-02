@@ -119,7 +119,7 @@ func unary() ast.Expression {
 		parseError = fmt.Errorf("unexpected end of input: expected NUMBER or expression")
 		return nil
 	}
-	if match(ast.NUMBER_LITERAL) || match(ast.Open_Parentheses) || match(ast.IDENTIFIER_LITERAL) {
+	if match(ast.NUMBER_LITERAL) || match(ast.Open_Parentheses) || match(ast.IDENTIFIER_LITERAL) || match(ast.TRUE) || match(ast.FALSE) {
 		return primary()
 	}
 	if match(ast.Minus) {
@@ -159,7 +159,7 @@ func primary() ast.Expression {
 		consume()
 		return exp
 	}
-	if match(ast.NUMBER_LITERAL) {
+	if match(ast.NUMBER_LITERAL) || match(ast.TRUE) || match(ast.FALSE) {
 		token := consume()
 		return &ast.CONSTANT{TokenLiteral: token}
 	}
@@ -183,7 +183,7 @@ func match(tokenType ast.TokenType) bool {
 }
 
 func match_next(tokenType ast.TokenType) bool {
-	if current+1 >= len(input) {
+	if current+1 >= len(Tokens) {
 		return false
 	}
 	return Tokens[current+1].Token == tokenType

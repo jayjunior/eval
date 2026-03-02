@@ -11,6 +11,11 @@ var input = ""
 var current_index = 0
 var res = make([]ast.Token, 0)
 var operators = []byte{'+', '-', '*', '/', '(', ')', '='}
+var keywords = map[string]ast.TokenType{
+	"var": ast.VAR,
+	"true": ast.TRUE,
+	"false": ast.FALSE,
+}
 
 func Tokenize(input_string string) ([]ast.Token, error) {
 	input = input_string
@@ -87,8 +92,8 @@ func word() {
 	for !isEnd() && (isLetter(rune(peek_char())) || peek_char() == '_') {
 		result += string(consume_char())
 	}
-	if result == string(ast.VAR) { // TODO use a map for keywords
-		res = append(res, ast.Token{Literal: result, Token: ast.VAR})
+	if tokenType, exists := keywords[result]; exists {
+		res = append(res, ast.Token{Literal: result, Token: tokenType})
 	} else {
 		res = append(res, ast.Token{Literal: result, Token: ast.IDENTIFIER_LITERAL})
 	}
