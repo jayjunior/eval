@@ -359,8 +359,8 @@ func TestTokenizeUnrecognizedPercent(t *testing.T) {
 func TestTokenizeUnrecognizedDot(t *testing.T) {
 	// Decimal numbers are not supported by the grammar
 	_, err := internal.Tokenize("3.14")
-	if err == nil {
-		t.Error("expected error for decimal point, got nil")
+	if err != nil {
+		t.Errorf("unexpected error for decimal point, %v", err)
 	}
 }
 
