@@ -7,6 +7,13 @@ type Token struct {
 	Token   TokenType
 }
 
+func (this *Token) IsArithmeticOperator() bool {
+	return this.Token == Minus ||
+		this.Token == Plus ||
+		this.Token == Multiplication ||
+		this.Token == Division
+}
+
 const (
 	Plus               TokenType = "+"
 	Minus              TokenType = "-"

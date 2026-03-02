@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/jayjunior/eval/internal/ast"
 )
@@ -10,10 +9,18 @@ import (
 var input = ""
 var current_index = 0
 var res = make([]ast.Token, 0)
-var operators = []byte{'+', '-', '*', '/', '(', ')', '='}
+var operators = map[byte]ast.TokenType{
+	'+': ast.Plus,
+	'-': ast.Minus,
+	'*': ast.Multiplication,
+	'/': ast.Division,
+	'(': ast.Open_Parentheses,
+	')': ast.Close_Parentheses,
+	'=': ast.EQUAL,
+}
 var keywords = map[string]ast.TokenType{
-	"var": ast.VAR,
-	"true": ast.TRUE,
+	"var":   ast.VAR,
+	"true":  ast.TRUE,
 	"false": ast.FALSE,
 }
 
@@ -23,8 +30,8 @@ func Tokenize(input_string string) ([]ast.Token, error) {
 	res = make([]ast.Token, 0)
 	for !isEnd() {
 		token := peek_char()
-		if slices.Contains(operators, token) {
-			operator()
+		if tokenType, exist := operators[token]; exist {
+			operator(tokenType)
 		} else if isDigit(rune(token)) {
 			number()
 		} else if isLetter(rune(token)) || token == '_' {
@@ -39,24 +46,9 @@ func Tokenize(input_string string) ([]ast.Token, error) {
 	return res, nil
 }
 
-func operator() {
+func operator(tokenType ast.TokenType) {
 	token := consume_char()
-	switch token {
-	case '+':
-		res = append(res, ast.Token{Literal: string(token), Token: ast.Plus})
-	case '-':
-		res = append(res, ast.Token{Literal: string(token), Token: ast.Minus})
-	case '*':
-		res = append(res, ast.Token{Literal: string(token), Token: ast.Multiplication})
-	case '/':
-		res = append(res, ast.Token{Literal: string(token), Token: ast.Division})
-	case '(':
-		res = append(res, ast.Token{Literal: string(token), Token: ast.Open_Parentheses})
-	case ')':
-		res = append(res, ast.Token{Literal: string(token), Token: ast.Close_Parentheses})
-	case '=':
-		res = append(res, ast.Token{Literal: string(token), Token: ast.EQUAL})
-	}
+	res = append(res, ast.Token{Literal: string(token), Token: tokenType})
 }
 
 func peek_char() byte {
