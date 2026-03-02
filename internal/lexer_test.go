@@ -15,7 +15,7 @@ func TestTokenizeSingleDigit(t *testing.T) {
 	if len(tokens) != 1 {
 		t.Fatalf("expected 1 token, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.Number {
+	if tokens[0].Token != ast.NUMBER {
 		t.Errorf("expected Number token, got %v", tokens[0].Token)
 	}
 }
@@ -31,7 +31,7 @@ func TestTokenizeMultiDigitNumber(t *testing.T) {
 	if tokens[0].Literal != "123" {
 		t.Errorf("expected '123', got '%s'", tokens[0].Literal)
 	}
-	if tokens[0].Token != ast.Number {
+	if tokens[0].Token != ast.NUMBER {
 		t.Errorf("expected Number token, got %v", tokens[0].Token)
 	}
 }
@@ -85,13 +85,13 @@ func TestTokenizeSimpleExpression(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("expected 3 tokens, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.Number || tokens[0].Literal != "1" {
+	if tokens[0].Token != ast.NUMBER || tokens[0].Literal != "1" {
 		t.Errorf("expected Number '1', got %v '%s'", tokens[0].Token, tokens[0].Literal)
 	}
 	if tokens[1].Token != ast.Plus {
 		t.Errorf("expected Plus, got %v", tokens[1].Token)
 	}
-	if tokens[2].Token != ast.Number || tokens[2].Literal != "2" {
+	if tokens[2].Token != ast.NUMBER || tokens[2].Literal != "2" {
 		t.Errorf("expected Number '2', got %v '%s'", tokens[2].Token, tokens[2].Literal)
 	}
 }
@@ -106,12 +106,12 @@ func TestTokenizeComplexExpression(t *testing.T) {
 		value     string
 	}{
 		{ast.Open_Parentheses, "("},
-		{ast.Number, "5"},
+		{ast.NUMBER, "5"},
 		{ast.Plus, "+"},
-		{ast.Number, "3"},
+		{ast.NUMBER, "3"},
 		{ast.Close_Parentheses, ")"},
 		{ast.Multiplication, "*"},
-		{ast.Number, "2"},
+		{ast.NUMBER, "2"},
 	}
 	if len(tokens) != len(expected) {
 		t.Fatalf("expected %d tokens, got %d", len(expected), len(tokens))
@@ -131,13 +131,13 @@ func TestTokenizeWithSpaces(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("expected 3 tokens, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.Number {
+	if tokens[0].Token != ast.NUMBER {
 		t.Errorf("expected Number, got %v", tokens[0].Token)
 	}
 	if tokens[1].Token != ast.Plus {
 		t.Errorf("expected Plus, got %v", tokens[1].Token)
 	}
-	if tokens[2].Token != ast.Number {
+	if tokens[2].Token != ast.NUMBER {
 		t.Errorf("expected Number, got %v", tokens[2].Token)
 	}
 }
@@ -163,7 +163,7 @@ func TestTokenizeUnaryMinus(t *testing.T) {
 	if tokens[0].Token != ast.Minus {
 		t.Errorf("expected Minus, got %v", tokens[0].Token)
 	}
-	if tokens[1].Token != ast.Number {
+	if tokens[1].Token != ast.NUMBER {
 		t.Errorf("expected Number, got %v", tokens[1].Token)
 	}
 }
@@ -182,7 +182,7 @@ func TestTokenizeDoubleUnaryMinus(t *testing.T) {
 	if tokens[1].Token != ast.Minus {
 		t.Errorf("expected Minus, got %v", tokens[1].Token)
 	}
-	if tokens[2].Token != ast.Number {
+	if tokens[2].Token != ast.NUMBER {
 		t.Errorf("expected Number, got %v", tokens[2].Token)
 	}
 }
@@ -195,9 +195,9 @@ func TestTokenizeNestedParentheses(t *testing.T) {
 	expected := []ast.TokenType{
 		ast.Open_Parentheses,
 		ast.Open_Parentheses,
-		ast.Number,
+		ast.NUMBER,
 		ast.Plus,
-		ast.Number,
+		ast.NUMBER,
 		ast.Close_Parentheses,
 		ast.Close_Parentheses,
 	}
@@ -230,7 +230,7 @@ func TestTokenizeAllOperators(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	expectedTypes := []ast.TokenType{
-		ast.Number, ast.Plus, ast.Number, ast.Minus, ast.Number, ast.Multiplication, ast.Number, ast.Division, ast.Number,
+		ast.NUMBER, ast.Plus, ast.NUMBER, ast.Minus, ast.NUMBER, ast.Multiplication, ast.NUMBER, ast.Division, ast.NUMBER,
 	}
 	if len(tokens) != len(expectedTypes) {
 		t.Fatalf("expected %d tokens, got %d", len(expectedTypes), len(tokens))
@@ -332,7 +332,7 @@ func TestTokenizeConsecutiveOperators(t *testing.T) {
 	if len(tokens) != 4 {
 		t.Fatalf("expected 4 tokens, got %d", len(tokens))
 	}
-	expectedTypes := []ast.TokenType{ast.Number, ast.Plus, ast.Minus, ast.Number}
+	expectedTypes := []ast.TokenType{ast.NUMBER, ast.Plus, ast.Minus, ast.NUMBER}
 	for i, exp := range expectedTypes {
 		if tokens[i].Token != exp {
 			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
@@ -342,19 +342,8 @@ func TestTokenizeConsecutiveOperators(t *testing.T) {
 
 // Error Cases
 
-func TestTokenizeUnrecognizedCharacterLetter(t *testing.T) {
-	_, err := internal.Tokenize("abc")
-	if err == nil {
-		t.Error("expected error for unrecognized character, got nil")
-	}
-}
 
-func TestTokenizeUnrecognizedCharacterInMiddle(t *testing.T) {
-	_, err := internal.Tokenize("1+a")
-	if err == nil {
-		t.Error("expected error for unrecognized character, got nil")
-	}
-}
+
 
 func TestTokenizeUnrecognizedSpecialChar(t *testing.T) {
 	_, err := internal.Tokenize("1@2")
@@ -400,12 +389,7 @@ func TestTokenizeUnrecognizedCaret(t *testing.T) {
 	}
 }
 
-func TestTokenizeUnrecognizedEquals(t *testing.T) {
-	_, err := internal.Tokenize("x=5")
-	if err == nil {
-		t.Error("expected error for unrecognized character, got nil")
-	}
-}
+
 
 // Grammar-based edge cases
 
@@ -448,10 +432,193 @@ func TestTokenizeParenthesizedUnary(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	expectedTypes := []ast.TokenType{ast.Minus, ast.Open_Parentheses, ast.Minus, ast.Number, ast.Close_Parentheses}
+	expectedTypes := []ast.TokenType{ast.Minus, ast.Open_Parentheses, ast.Minus, ast.NUMBER, ast.Close_Parentheses}
 	if len(tokens) != len(expectedTypes) {
 		t.Fatalf("expected %d tokens, got %d", len(expectedTypes), len(tokens))
 	}
+	for i, exp := range expectedTypes {
+		if tokens[i].Token != exp {
+			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
+		}
+	}
+}
+
+// Variable Declaration Tests
+
+func TestTokenizeVarKeyword(t *testing.T) {
+	tokens, err := internal.Tokenize("var")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 1 {
+		t.Fatalf("expected 1 token, got %d", len(tokens))
+	}
+	if tokens[0].Token != ast.VAR {
+		t.Errorf("expected VAR token, got %v", tokens[0].Token)
+	}
+	if tokens[0].Literal != "var" {
+		t.Errorf("expected 'var', got '%s'", tokens[0].Literal)
+	}
+}
+
+func TestTokenizeSimpleIdentifier(t *testing.T) {
+	tokens, err := internal.Tokenize("x")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 1 {
+		t.Fatalf("expected 1 token, got %d", len(tokens))
+	}
+	if tokens[0].Token != ast.IDENTIFIER {
+		t.Errorf("expected IDENTIFIER token, got %v", tokens[0].Token)
+	}
+	if tokens[0].Literal != "x" {
+		t.Errorf("expected 'x', got '%s'", tokens[0].Literal)
+	}
+}
+
+func TestTokenizeMultiCharIdentifier(t *testing.T) {
+	tokens, err := internal.Tokenize("myVar")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 1 {
+		t.Fatalf("expected 1 token, got %d", len(tokens))
+	}
+	if tokens[0].Token != ast.IDENTIFIER {
+		t.Errorf("expected IDENTIFIER token, got %v", tokens[0].Token)
+	}
+	if tokens[0].Literal != "myVar" {
+		t.Errorf("expected 'myVar', got '%s'", tokens[0].Literal)
+	}
+}
+
+func TestTokenizeEqualSign(t *testing.T) {
+	tokens, err := internal.Tokenize("=")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 1 {
+		t.Fatalf("expected 1 token, got %d", len(tokens))
+	}
+	if tokens[0].Token != ast.EQUAL {
+		t.Errorf("expected EQUAL token, got %v", tokens[0].Token)
+	}
+}
+
+func TestTokenizeVariableDeclaration(t *testing.T) {
+	tokens, err := internal.Tokenize("var myVar")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 2 {
+		t.Fatalf("expected 2 tokens, got %d", len(tokens))
+	}
+	if tokens[0].Token != ast.VAR {
+		t.Errorf("token 0: expected VAR, got %v", tokens[0].Token)
+	}
+	if tokens[1].Token != ast.IDENTIFIER {
+		t.Errorf("token 1: expected IDENTIFIER, got %v", tokens[1].Token)
+	}
+	if tokens[1].Literal != "myVar" {
+		t.Errorf("token 1: expected 'myVar', got '%s'", tokens[1].Literal)
+	}
+}
+
+func TestTokenizeSimpleAssignment(t *testing.T) {
+	tokens, err := internal.Tokenize("x = 5")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 3 {
+		t.Fatalf("expected 3 tokens, got %d", len(tokens))
+	}
+	expectedTypes := []ast.TokenType{ast.IDENTIFIER, ast.EQUAL, ast.NUMBER}
+	for i, exp := range expectedTypes {
+		if tokens[i].Token != exp {
+			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
+		}
+	}
+}
+
+func TestTokenizeAssignmentWithExpression(t *testing.T) {
+	tokens, err := internal.Tokenize("x = 1 + 2")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 5 {
+		t.Fatalf("expected 5 tokens, got %d", len(tokens))
+	}
+	expectedTypes := []ast.TokenType{ast.IDENTIFIER, ast.EQUAL, ast.NUMBER, ast.Plus, ast.NUMBER}
+	for i, exp := range expectedTypes {
+		if tokens[i].Token != exp {
+			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
+		}
+	}
+}
+
+func TestTokenizeAssignmentWithComplexExpression(t *testing.T) {
+	tokens, err := internal.Tokenize("result = (10 + 5) * 2")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 9 {
+		t.Fatalf("expected 9 tokens, got %d", len(tokens))
+	}
+	expectedTypes := []ast.TokenType{
+		ast.IDENTIFIER, ast.EQUAL, ast.Open_Parentheses, ast.NUMBER, ast.Plus, ast.NUMBER,
+		ast.Close_Parentheses, ast.Multiplication, ast.NUMBER,
+	}
+	for i, exp := range expectedTypes {
+		if tokens[i].Token != exp {
+			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
+		}
+	}
+}
+
+func TestTokenizeMultipleStatements(t *testing.T) {
+	// Test case should handle assignments with various identifiers
+	tokens, err := internal.Tokenize("count = 10 + count")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 5 {
+		t.Fatalf("expected 5 tokens, got %d", len(tokens))
+	}
+}
+
+func TestTokenizeVariableDeclarationWithSpaces(t *testing.T) {
+	tokens, err := internal.Tokenize("var  x")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 2 {
+		t.Fatalf("expected 2 tokens, got %d", len(tokens))
+	}
+	if tokens[0].Token != ast.VAR || tokens[1].Token != ast.IDENTIFIER {
+		t.Errorf("expected VAR followed by IDENTIFIER")
+	}
+}
+
+func TestTokenizeAssignmentWithSpaces(t *testing.T) {
+	tokens, err := internal.Tokenize("x  =  5")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 3 {
+		t.Fatalf("expected 3 tokens, got %d", len(tokens))
+	}
+}
+
+func TestTokenizeAssignmentWithIdentifierExpression(t *testing.T) {
+	tokens, err := internal.Tokenize("x = y")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tokens) != 3 {
+		t.Fatalf("expected 3 tokens, got %d", len(tokens))
+	}
+	expectedTypes := []ast.TokenType{ast.IDENTIFIER, ast.EQUAL, ast.IDENTIFIER}
 	for i, exp := range expectedTypes {
 		if tokens[i].Token != exp {
 			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)

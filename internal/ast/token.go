@@ -14,5 +14,8 @@ const (
 	Division          TokenType = "/"
 	Open_Parentheses  TokenType = "("
 	Close_Parentheses TokenType = ")"
-	Number            TokenType = "\\d+"
+	NUMBER            TokenType = "\\d*"
+	IDENTIFIER        TokenType = "_[a-zA-Z]"
+	EQUAL             TokenType = "="
+	VAR               TokenType = "var"
 )

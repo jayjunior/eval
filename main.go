@@ -9,6 +9,7 @@ import (
 	"github.com/jayjunior/eval/internal"
 	"github.com/jayjunior/eval/internal/visitors"
 )
+var evaluator = visitors.Evaluator{}
 
 func main() {
 	if len(os.Args) >= 2 {
@@ -58,7 +59,7 @@ func evaluateExpression(expression string, exitOnError bool) {
 		return
 	}
 
-	evaluator := visitors.Evaluator{}
+	
 	res, err := evaluator.Evaluate(exprAst)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error evaluating the expression: %v\n", err)

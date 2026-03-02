@@ -25,8 +25,8 @@ func TestParseNumber(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
-	if num.Literal != "5" {
-		t.Errorf("expected '5', got '%s'", num.Literal)
+	if num.TokenLiteral.Literal != "5" {
+		t.Errorf("expected '5', got '%s'", num.TokenLiteral.Literal)
 	}
 }
 
@@ -39,8 +39,8 @@ func TestParseMultiDigitNumber(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
-	if num.Literal != "123" {
-		t.Errorf("expected '123', got '%s'", num.Literal)
+	if num.TokenLiteral.Literal != "123" {
+		t.Errorf("expected '123', got '%s'", num.TokenLiteral.Literal)
 	}
 }
 
@@ -142,8 +142,8 @@ func TestParseParentheses(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
-	if num.Literal != "5" {
-		t.Errorf("expected '5', got '%s'", num.Literal)
+	if num.TokenLiteral.Literal != "5" {
+		t.Errorf("expected '5', got '%s'", num.TokenLiteral.Literal)
 	}
 }
 
@@ -156,8 +156,8 @@ func TestParseNestedParentheses(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
-	if num.Literal != "5" {
-		t.Errorf("expected '5', got '%s'", num.Literal)
+	if num.TokenLiteral.Literal != "5" {
+		t.Errorf("expected '5', got '%s'", num.TokenLiteral.Literal)
 	}
 }
 
@@ -420,8 +420,8 @@ func TestParseZero(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
-	if num.Literal != "0" {
-		t.Errorf("expected '0', got '%s'", num.Literal)
+	if num.TokenLiteral.Literal != "0" {
+		t.Errorf("expected '0', got '%s'", num.TokenLiteral.Literal)
 	}
 }
 
@@ -434,8 +434,8 @@ func TestParseLargeNumber(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
-	if num.Literal != "123456789" {
-		t.Errorf("expected '123456789', got '%s'", num.Literal)
+	if num.TokenLiteral.Literal != "123456789" {
+		t.Errorf("expected '123456789', got '%s'", num.TokenLiteral.Literal)
 	}
 }
 
@@ -457,5 +457,208 @@ func TestParseMultipleParses(t *testing.T) {
 	_, err3 := internal.Parse(tokens("5-6"))
 	if err3 != nil {
 		t.Fatalf("third parse failed after error: %v", err3)
+	}
+}
+
+// Variable Declaration Tests
+
+func TestParseVarDeclaration(t *testing.T) {
+	exp, err := internal.Parse(tokens("var x"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	varDecl, ok := exp.(*ast.VarDeclaration)
+	if !ok {
+		t.Fatalf("expected VarDeclaration, got %T", exp)
+	}
+	if varDecl.Operand.TokenLiteral.Literal != "x" {
+		t.Errorf("expected identifier 'x', got '%s'", varDecl.Operand.TokenLiteral.Literal)
+	}
+}
+
+func TestParseVarDeclarationMultiChar(t *testing.T) {
+	exp, err := internal.Parse(tokens("var myVar"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	varDecl, ok := exp.(*ast.VarDeclaration)
+	if !ok {
+		t.Fatalf("expected VarDeclaration, got %T", exp)
+	}
+	if varDecl.Operand.TokenLiteral.Literal != "myVar" {
+		t.Errorf("expected identifier 'myVar', got '%s'", varDecl.Operand.TokenLiteral.Literal)
+	}
+}
+
+func TestParseVarDeclarationUnderscore(t *testing.T) {
+	exp, err := internal.Parse(tokens("var _x"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	varDecl, ok := exp.(*ast.VarDeclaration)
+	if !ok {
+		t.Fatalf("expected VarDeclaration, got %T", exp)
+	}
+	if varDecl.Operand.TokenLiteral.Literal != "_x" {
+		t.Errorf("expected identifier '_x', got '%s'", varDecl.Operand.TokenLiteral.Literal)
+	}
+}
+
+func TestParseVarDeclarationMissingIdentifier(t *testing.T) {
+	_, err := internal.Parse(tokens("var"))
+	if err == nil {
+		t.Error("expected error for 'var' without identifier, got nil")
+	}
+}
+
+// Assignment Tests
+
+func TestParseAssignmentSimple(t *testing.T) {
+	exp, err := internal.Parse(tokens("x=5"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	if assign.LHS.TokenLiteral.Literal != "x" {
+		t.Errorf("expected LHS identifier 'x', got '%s'", assign.LHS.TokenLiteral.Literal)
+	}
+	numLit, ok := assign.Rhs.(*ast.NumberLiteral)
+	if !ok {
+		t.Fatalf("expected RHS to be NumberLiteral, got %T", assign.Rhs)
+	}
+	if numLit.TokenLiteral.Literal != "5" {
+		t.Errorf("expected RHS value '5', got '%s'", numLit.TokenLiteral.Literal)
+	}
+}
+
+func TestParseAssignmentWithSpaces(t *testing.T) {
+	exp, err := internal.Parse(tokens("x = 10"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	if assign.LHS.TokenLiteral.Literal != "x" {
+		t.Errorf("expected LHS identifier 'x', got '%s'", assign.LHS.TokenLiteral.Literal)
+	}
+}
+
+func TestParseAssignmentMultiCharIdentifier(t *testing.T) {
+	exp, err := internal.Parse(tokens("myVar=42"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	if assign.LHS.TokenLiteral.Literal != "myVar" {
+		t.Errorf("expected LHS identifier 'myVar', got '%s'", assign.LHS.TokenLiteral.Literal)
+	}
+}
+
+func TestParseAssignmentExpressionRHS(t *testing.T) {
+	exp, err := internal.Parse(tokens("x=1+2"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	binExpr, ok := assign.Rhs.(*ast.BinaryExpression)
+	if !ok {
+		t.Fatalf("expected RHS to be BinaryExpression, got %T", assign.Rhs)
+	}
+	if binExpr.Operator.Token != ast.Plus {
+		t.Errorf("expected Plus operator in RHS, got %v", binExpr.Operator.Token)
+	}
+}
+
+func TestParseAssignmentComplexExpression(t *testing.T) {
+	exp, err := internal.Parse(tokens("result=2*3+4"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	if assign.LHS.TokenLiteral.Literal != "result" {
+		t.Errorf("expected LHS identifier 'result', got '%s'", assign.LHS.TokenLiteral.Literal)
+	}
+	_, ok = assign.Rhs.(*ast.BinaryExpression)
+	if !ok {
+		t.Fatalf("expected RHS to be BinaryExpression, got %T", assign.Rhs)
+	}
+}
+
+func TestParseAssignmentUnaryExpression(t *testing.T) {
+	exp, err := internal.Parse(tokens("x=-5"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	unary, ok := assign.Rhs.(*ast.UnaryExpression)
+	if !ok {
+		t.Fatalf("expected RHS to be UnaryExpression, got %T", assign.Rhs)
+	}
+	if unary.Operator.Token != ast.Minus {
+		t.Errorf("expected Minus operator in unary, got %v", unary.Operator.Token)
+	}
+}
+
+func TestParseAssignmentParenthesizedExpression(t *testing.T) {
+	exp, err := internal.Parse(tokens("x=(1+2)*y"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	_, ok = assign.Rhs.(*ast.BinaryExpression)
+	if !ok {
+		t.Fatalf("expected RHS to be BinaryExpression, got %T", assign.Rhs)
+	}
+}
+
+func TestParseAssignmentMissingEqualSign(t *testing.T) {
+	_, err := internal.Parse(tokens("x 5"))
+	if err == nil {
+		t.Error("expected error for assignment without '=', got nil")
+	}
+}
+
+func TestParseAssignmentMissingRHS(t *testing.T) {
+	_, err := internal.Parse(tokens("x="))
+	if err == nil {
+		t.Error("expected error for assignment without RHS, got nil")
+	}
+}
+
+func TestParseAssignmentZeroRHS(t *testing.T) {
+	exp, err := internal.Parse(tokens("x=0"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	assign, ok := exp.(*ast.Assignement)
+	if !ok {
+		t.Fatalf("expected Assignement, got %T", exp)
+	}
+	numLit, ok := assign.Rhs.(*ast.NumberLiteral)
+	if !ok {
+		t.Fatalf("expected RHS to be NumberLiteral, got %T", assign.Rhs)
+	}
+	if numLit.TokenLiteral.Literal != "0" {
+		t.Errorf("expected RHS value '0', got '%s'", numLit.TokenLiteral.Literal)
 	}
 }

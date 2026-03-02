@@ -1,7 +1,7 @@
 package ast
 
 type NumberLiteral struct {
-	Literal string
+	TokenLiteral Token
 }
 
 func (this *NumberLiteral) accept() interface{} {

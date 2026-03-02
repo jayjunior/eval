@@ -7,56 +7,83 @@ import (
 	"github.com/jayjunior/eval/internal/ast"
 )
 
-func Tokenize(input string) ([]ast.Token, error) {
-	res := make([]ast.Token, 0)
+var input = ""
+var current_index = 0
+var res = make([]ast.Token, 0)
 
-	for i := 0; i < len(input); {
-		token := input[i]
-		switch token {
-		case '+':
-			res = append(res, ast.Token{Literal: string(token), Token: ast.Plus})
-			i++
+func Tokenize(input_string string) ([]ast.Token, error) {
+	input = input_string
+	current_index = 0
+	res = make([]ast.Token, 0)
+	for !isEnd() {
+		token := peek_char()
+		if token == '+' || token == '-' || token == '*' || token == '/' || token == '(' || token == ')' || token == '=' {
+			operator()
+		} else if unicode.IsDigit(rune(token)) {
+			number()
+		} else if unicode.IsLetter(rune(token)) || token == '_' {
+			word()
+		} else if token == '\t' || token == ' ' {
+			consume_char()
 			continue
-		case '-':
-			res = append(res, ast.Token{Literal: string(token), Token: ast.Minus})
-			i++
-			continue
-
-		case '*':
-			res = append(res, ast.Token{Literal: string(token), Token: ast.Multiplication})
-			i++
-			continue
-
-		case '/':
-			res = append(res, ast.Token{Literal: string(token), Token: ast.Division})
-			i++
-			continue
-
-		case '(':
-			res = append(res, ast.Token{Literal: string(token), Token: ast.Open_Parentheses})
-			i++
-			continue
-
-		case ')':
-			res = append(res, ast.Token{Literal: string(token), Token: ast.Close_Parentheses})
-			i++
-			continue
-
-		case '\t', ' ':
-			i++
-			continue
-		}
-		if unicode.IsDigit(rune(token)) {
-			digit := ""
-			for i < len(input) && unicode.IsDigit(rune(input[i])) {
-				digit += string(input[i])
-				i++
-			}
-			res = append(res, ast.Token{Literal: digit, Token: ast.Number})
 		} else {
-			return nil, fmt.Errorf("Unrecognized character at position %d", i)
+			return nil, fmt.Errorf("Unrecognized character at position %d", current_index)
 		}
 	}
 
 	return res, nil
+}
+
+func operator() {
+	token := consume_char()
+	switch token {
+	case '+':
+		res = append(res, ast.Token{Literal: string(token), Token: ast.Plus})
+	case '-':
+		res = append(res, ast.Token{Literal: string(token), Token: ast.Minus})
+	case '*':
+		res = append(res, ast.Token{Literal: string(token), Token: ast.Multiplication})
+	case '/':
+		res = append(res, ast.Token{Literal: string(token), Token: ast.Division})
+	case '(':
+		res = append(res, ast.Token{Literal: string(token), Token: ast.Open_Parentheses})
+	case ')':
+		res = append(res, ast.Token{Literal: string(token), Token: ast.Close_Parentheses})
+	case '=':
+		res = append(res, ast.Token{Literal: string(token), Token: ast.EQUAL})
+	}
+}
+
+func peek_char() byte {
+	return input[current_index]
+}
+
+func consume_char() byte {
+	res := input[current_index]
+	current_index++
+	return res
+}
+
+func number() {
+	digit := ""
+	for !isEnd() && unicode.IsDigit(rune(peek_char())) {
+		digit += string(consume_char())
+	}
+	res = append(res, ast.Token{Literal: digit, Token: ast.NUMBER})
+}
+
+func word() {
+	result := ""
+	for !isEnd() && (unicode.IsLetter(rune(peek_char())) || peek_char() == '_') { //TODO use a list of valid identifier characters
+		result += string(consume_char())
+	}
+	if result == string(ast.VAR) { // TODO use a map for keywords
+		res = append(res, ast.Token{Literal: result, Token: ast.VAR})
+	} else {
+		res = append(res, ast.Token{Literal: result, Token: ast.IDENTIFIER})
+	}
+}
+
+func isEnd() bool {
+	return current_index >= len(input)
 }
