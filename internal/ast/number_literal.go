@@ -1,9 +1,9 @@
 package ast
 
-type NumberLiteral struct {
+type Number struct {
 	TokenLiteral Token
 }
 
-func (this *NumberLiteral) accept() interface{} {
+func (this *Number) accept() interface{} {
 	return nil
 }

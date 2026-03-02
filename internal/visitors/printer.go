@@ -1,8 +1,9 @@
-package visitors;
+package visitors
 
 import (
 	"fmt"
 	"strings"
+
 	"github.com/jayjunior/eval/internal/ast"
 )
 
@@ -31,7 +32,7 @@ func (this *Printer) visit(exp ast.Expression, prefix string, isLast bool) {
 	case *ast.UnaryExpression:
 		this.builder.WriteString(prefix + connector + "UnaryExpr (" + e.Operator.Literal + ")\n")
 		this.visit(e.Operand, childPrefix, true)
-	case *ast.NumberLiteral:
+	case *ast.Number:
 		this.builder.WriteString(prefix + connector + "Number: " + e.TokenLiteral.Literal + "\n")
 	}
 }
@@ -48,5 +49,5 @@ func (this *Printer) PrintAST(exp ast.Expression) {
 }
 
 func CreatePrinter() *Printer {
-	return &Printer{};
+	return &Printer{}
 }

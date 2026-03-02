@@ -15,7 +15,7 @@ func TestTokenizeSingleDigit(t *testing.T) {
 	if len(tokens) != 1 {
 		t.Fatalf("expected 1 token, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.NUMBER {
+	if tokens[0].Token != ast.NUMBER_LITERAL {
 		t.Errorf("expected Number token, got %v", tokens[0].Token)
 	}
 }
@@ -31,7 +31,7 @@ func TestTokenizeMultiDigitNumber(t *testing.T) {
 	if tokens[0].Literal != "123" {
 		t.Errorf("expected '123', got '%s'", tokens[0].Literal)
 	}
-	if tokens[0].Token != ast.NUMBER {
+	if tokens[0].Token != ast.NUMBER_LITERAL {
 		t.Errorf("expected Number token, got %v", tokens[0].Token)
 	}
 }
@@ -85,13 +85,13 @@ func TestTokenizeSimpleExpression(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("expected 3 tokens, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.NUMBER || tokens[0].Literal != "1" {
+	if tokens[0].Token != ast.NUMBER_LITERAL || tokens[0].Literal != "1" {
 		t.Errorf("expected Number '1', got %v '%s'", tokens[0].Token, tokens[0].Literal)
 	}
 	if tokens[1].Token != ast.Plus {
 		t.Errorf("expected Plus, got %v", tokens[1].Token)
 	}
-	if tokens[2].Token != ast.NUMBER || tokens[2].Literal != "2" {
+	if tokens[2].Token != ast.NUMBER_LITERAL || tokens[2].Literal != "2" {
 		t.Errorf("expected Number '2', got %v '%s'", tokens[2].Token, tokens[2].Literal)
 	}
 }
@@ -106,12 +106,12 @@ func TestTokenizeComplexExpression(t *testing.T) {
 		value     string
 	}{
 		{ast.Open_Parentheses, "("},
-		{ast.NUMBER, "5"},
+		{ast.NUMBER_LITERAL, "5"},
 		{ast.Plus, "+"},
-		{ast.NUMBER, "3"},
+		{ast.NUMBER_LITERAL, "3"},
 		{ast.Close_Parentheses, ")"},
 		{ast.Multiplication, "*"},
-		{ast.NUMBER, "2"},
+		{ast.NUMBER_LITERAL, "2"},
 	}
 	if len(tokens) != len(expected) {
 		t.Fatalf("expected %d tokens, got %d", len(expected), len(tokens))
@@ -131,13 +131,13 @@ func TestTokenizeWithSpaces(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("expected 3 tokens, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.NUMBER {
+	if tokens[0].Token != ast.NUMBER_LITERAL {
 		t.Errorf("expected Number, got %v", tokens[0].Token)
 	}
 	if tokens[1].Token != ast.Plus {
 		t.Errorf("expected Plus, got %v", tokens[1].Token)
 	}
-	if tokens[2].Token != ast.NUMBER {
+	if tokens[2].Token != ast.NUMBER_LITERAL {
 		t.Errorf("expected Number, got %v", tokens[2].Token)
 	}
 }
@@ -163,7 +163,7 @@ func TestTokenizeUnaryMinus(t *testing.T) {
 	if tokens[0].Token != ast.Minus {
 		t.Errorf("expected Minus, got %v", tokens[0].Token)
 	}
-	if tokens[1].Token != ast.NUMBER {
+	if tokens[1].Token != ast.NUMBER_LITERAL {
 		t.Errorf("expected Number, got %v", tokens[1].Token)
 	}
 }
@@ -182,7 +182,7 @@ func TestTokenizeDoubleUnaryMinus(t *testing.T) {
 	if tokens[1].Token != ast.Minus {
 		t.Errorf("expected Minus, got %v", tokens[1].Token)
 	}
-	if tokens[2].Token != ast.NUMBER {
+	if tokens[2].Token != ast.NUMBER_LITERAL {
 		t.Errorf("expected Number, got %v", tokens[2].Token)
 	}
 }
@@ -195,9 +195,9 @@ func TestTokenizeNestedParentheses(t *testing.T) {
 	expected := []ast.TokenType{
 		ast.Open_Parentheses,
 		ast.Open_Parentheses,
-		ast.NUMBER,
+		ast.NUMBER_LITERAL,
 		ast.Plus,
-		ast.NUMBER,
+		ast.NUMBER_LITERAL,
 		ast.Close_Parentheses,
 		ast.Close_Parentheses,
 	}
@@ -230,7 +230,7 @@ func TestTokenizeAllOperators(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	expectedTypes := []ast.TokenType{
-		ast.NUMBER, ast.Plus, ast.NUMBER, ast.Minus, ast.NUMBER, ast.Multiplication, ast.NUMBER, ast.Division, ast.NUMBER,
+		ast.NUMBER_LITERAL, ast.Plus, ast.NUMBER_LITERAL, ast.Minus, ast.NUMBER_LITERAL, ast.Multiplication, ast.NUMBER_LITERAL, ast.Division, ast.NUMBER_LITERAL,
 	}
 	if len(tokens) != len(expectedTypes) {
 		t.Fatalf("expected %d tokens, got %d", len(expectedTypes), len(tokens))
@@ -332,7 +332,7 @@ func TestTokenizeConsecutiveOperators(t *testing.T) {
 	if len(tokens) != 4 {
 		t.Fatalf("expected 4 tokens, got %d", len(tokens))
 	}
-	expectedTypes := []ast.TokenType{ast.NUMBER, ast.Plus, ast.Minus, ast.NUMBER}
+	expectedTypes := []ast.TokenType{ast.NUMBER_LITERAL, ast.Plus, ast.Minus, ast.NUMBER_LITERAL}
 	for i, exp := range expectedTypes {
 		if tokens[i].Token != exp {
 			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
@@ -341,9 +341,6 @@ func TestTokenizeConsecutiveOperators(t *testing.T) {
 }
 
 // Error Cases
-
-
-
 
 func TestTokenizeUnrecognizedSpecialChar(t *testing.T) {
 	_, err := internal.Tokenize("1@2")
@@ -389,8 +386,6 @@ func TestTokenizeUnrecognizedCaret(t *testing.T) {
 	}
 }
 
-
-
 // Grammar-based edge cases
 
 func TestTokenizeExpressionFromGrammar(t *testing.T) {
@@ -432,7 +427,7 @@ func TestTokenizeParenthesizedUnary(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	expectedTypes := []ast.TokenType{ast.Minus, ast.Open_Parentheses, ast.Minus, ast.NUMBER, ast.Close_Parentheses}
+	expectedTypes := []ast.TokenType{ast.Minus, ast.Open_Parentheses, ast.Minus, ast.NUMBER_LITERAL, ast.Close_Parentheses}
 	if len(tokens) != len(expectedTypes) {
 		t.Fatalf("expected %d tokens, got %d", len(expectedTypes), len(tokens))
 	}
@@ -469,7 +464,7 @@ func TestTokenizeSimpleIdentifier(t *testing.T) {
 	if len(tokens) != 1 {
 		t.Fatalf("expected 1 token, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.IDENTIFIER {
+	if tokens[0].Token != ast.IDENTIFIER_LITERAL {
 		t.Errorf("expected IDENTIFIER token, got %v", tokens[0].Token)
 	}
 	if tokens[0].Literal != "x" {
@@ -485,7 +480,7 @@ func TestTokenizeMultiCharIdentifier(t *testing.T) {
 	if len(tokens) != 1 {
 		t.Fatalf("expected 1 token, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.IDENTIFIER {
+	if tokens[0].Token != ast.IDENTIFIER_LITERAL {
 		t.Errorf("expected IDENTIFIER token, got %v", tokens[0].Token)
 	}
 	if tokens[0].Literal != "myVar" {
@@ -517,7 +512,7 @@ func TestTokenizeVariableDeclaration(t *testing.T) {
 	if tokens[0].Token != ast.VAR {
 		t.Errorf("token 0: expected VAR, got %v", tokens[0].Token)
 	}
-	if tokens[1].Token != ast.IDENTIFIER {
+	if tokens[1].Token != ast.IDENTIFIER_LITERAL {
 		t.Errorf("token 1: expected IDENTIFIER, got %v", tokens[1].Token)
 	}
 	if tokens[1].Literal != "myVar" {
@@ -533,7 +528,7 @@ func TestTokenizeSimpleAssignment(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("expected 3 tokens, got %d", len(tokens))
 	}
-	expectedTypes := []ast.TokenType{ast.IDENTIFIER, ast.EQUAL, ast.NUMBER}
+	expectedTypes := []ast.TokenType{ast.IDENTIFIER_LITERAL, ast.EQUAL, ast.NUMBER_LITERAL}
 	for i, exp := range expectedTypes {
 		if tokens[i].Token != exp {
 			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
@@ -549,7 +544,7 @@ func TestTokenizeAssignmentWithExpression(t *testing.T) {
 	if len(tokens) != 5 {
 		t.Fatalf("expected 5 tokens, got %d", len(tokens))
 	}
-	expectedTypes := []ast.TokenType{ast.IDENTIFIER, ast.EQUAL, ast.NUMBER, ast.Plus, ast.NUMBER}
+	expectedTypes := []ast.TokenType{ast.IDENTIFIER_LITERAL, ast.EQUAL, ast.NUMBER_LITERAL, ast.Plus, ast.NUMBER_LITERAL}
 	for i, exp := range expectedTypes {
 		if tokens[i].Token != exp {
 			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)
@@ -566,8 +561,8 @@ func TestTokenizeAssignmentWithComplexExpression(t *testing.T) {
 		t.Fatalf("expected 9 tokens, got %d", len(tokens))
 	}
 	expectedTypes := []ast.TokenType{
-		ast.IDENTIFIER, ast.EQUAL, ast.Open_Parentheses, ast.NUMBER, ast.Plus, ast.NUMBER,
-		ast.Close_Parentheses, ast.Multiplication, ast.NUMBER,
+		ast.IDENTIFIER_LITERAL, ast.EQUAL, ast.Open_Parentheses, ast.NUMBER_LITERAL, ast.Plus, ast.NUMBER_LITERAL,
+		ast.Close_Parentheses, ast.Multiplication, ast.NUMBER_LITERAL,
 	}
 	for i, exp := range expectedTypes {
 		if tokens[i].Token != exp {
@@ -595,7 +590,7 @@ func TestTokenizeVariableDeclarationWithSpaces(t *testing.T) {
 	if len(tokens) != 2 {
 		t.Fatalf("expected 2 tokens, got %d", len(tokens))
 	}
-	if tokens[0].Token != ast.VAR || tokens[1].Token != ast.IDENTIFIER {
+	if tokens[0].Token != ast.VAR || tokens[1].Token != ast.IDENTIFIER_LITERAL {
 		t.Errorf("expected VAR followed by IDENTIFIER")
 	}
 }
@@ -618,7 +613,7 @@ func TestTokenizeAssignmentWithIdentifierExpression(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("expected 3 tokens, got %d", len(tokens))
 	}
-	expectedTypes := []ast.TokenType{ast.IDENTIFIER, ast.EQUAL, ast.IDENTIFIER}
+	expectedTypes := []ast.TokenType{ast.IDENTIFIER_LITERAL, ast.EQUAL, ast.IDENTIFIER_LITERAL}
 	for i, exp := range expectedTypes {
 		if tokens[i].Token != exp {
 			t.Errorf("token %d: expected %v, got %v", i, exp, tokens[i].Token)

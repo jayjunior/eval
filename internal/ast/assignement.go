@@ -1,7 +1,7 @@
 package ast
 
 type Assignement struct {
-	LHS IdentifierLiteral
+	LHS Identifier
 	Rhs Expression
 }
 

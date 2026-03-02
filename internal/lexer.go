@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	"unicode"
+	"slices"
 
 	"github.com/jayjunior/eval/internal/ast"
 )
@@ -10,6 +10,7 @@ import (
 var input = ""
 var current_index = 0
 var res = make([]ast.Token, 0)
+var operators = []byte{'+', '-', '*', '/', '(', ')', '='}
 
 func Tokenize(input_string string) ([]ast.Token, error) {
 	input = input_string
@@ -17,15 +18,14 @@ func Tokenize(input_string string) ([]ast.Token, error) {
 	res = make([]ast.Token, 0)
 	for !isEnd() {
 		token := peek_char()
-		if token == '+' || token == '-' || token == '*' || token == '/' || token == '(' || token == ')' || token == '=' {
+		if slices.Contains(operators, token) {
 			operator()
-		} else if unicode.IsDigit(rune(token)) {
+		} else if isDigit(rune(token)) {
 			number()
-		} else if unicode.IsLetter(rune(token)) || token == '_' {
+		} else if isLetter(rune(token)) || token == '_' {
 			word()
 		} else if token == '\t' || token == ' ' {
 			consume_char()
-			continue
 		} else {
 			return nil, fmt.Errorf("Unrecognized character at position %d", current_index)
 		}
@@ -66,24 +66,42 @@ func consume_char() byte {
 
 func number() {
 	digit := ""
-	for !isEnd() && unicode.IsDigit(rune(peek_char())) {
+	isFloat := false
+	for !isEnd() && (isDigit(rune(peek_char())) || peek_char() == '.') {
+		if peek_char() == '.' {
+			digit += string(consume_char())
+			isFloat = true
+			break
+		}
 		digit += string(consume_char())
 	}
-	res = append(res, ast.Token{Literal: digit, Token: ast.NUMBER})
+
+	for !isEnd() && isFloat && isDigit(rune(peek_char())) {
+		digit += string(consume_char())
+	}
+	res = append(res, ast.Token{Literal: digit, Token: ast.NUMBER_LITERAL})
 }
 
 func word() {
 	result := ""
-	for !isEnd() && (unicode.IsLetter(rune(peek_char())) || peek_char() == '_') { //TODO use a list of valid identifier characters
+	for !isEnd() && (isLetter(rune(peek_char())) || peek_char() == '_') {
 		result += string(consume_char())
 	}
 	if result == string(ast.VAR) { // TODO use a map for keywords
 		res = append(res, ast.Token{Literal: result, Token: ast.VAR})
 	} else {
-		res = append(res, ast.Token{Literal: result, Token: ast.IDENTIFIER})
+		res = append(res, ast.Token{Literal: result, Token: ast.IDENTIFIER_LITERAL})
 	}
 }
 
 func isEnd() bool {
 	return current_index >= len(input)
+}
+
+func isDigit(digit rune) bool {
+	return digit >= '0' && digit <= '9'
+}
+
+func isLetter(letter rune) bool {
+	return (letter >= 'a' && letter <= 'z') || (letter >= 'A' && letter <= 'Z')
 }

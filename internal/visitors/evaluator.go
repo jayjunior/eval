@@ -44,14 +44,13 @@ func (this *Evaluator) visit(exp ast.Expression) (int, error) {
 			return 0, err
 		}
 		return -res, nil
-	case *ast.NumberLiteral:
+	case *ast.Number:
 		res, err := strconv.Atoi(e.TokenLiteral.Literal)
 		if err != nil {
 			return 0, fmt.Errorf("error converting %s to int: %v", e.TokenLiteral.Literal, err)
 		}
 		return res, nil
-	case *ast.IdentifierLiteral:
-		//TODO
+	case *ast.Identifier:
 		operand := e.TokenLiteral.Literal
 		if _, exist := this.identifiers[operand]; !exist {
 			return 0, fmt.Errorf("undeclared identifier %s", operand)

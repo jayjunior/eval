@@ -21,7 +21,7 @@ func TestParseNumber(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	num, ok := exp.(*ast.NumberLiteral)
+	num, ok := exp.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
@@ -35,7 +35,7 @@ func TestParseMultiDigitNumber(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	num, ok := exp.(*ast.NumberLiteral)
+	num, ok := exp.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
@@ -127,7 +127,7 @@ func TestParseDoubleUnaryMinus(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected nested UnaryExpression, got %T", outer.Operand)
 	}
-	_, ok = inner.Operand.(*ast.NumberLiteral)
+	_, ok = inner.Operand.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", inner.Operand)
 	}
@@ -138,7 +138,7 @@ func TestParseParentheses(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	num, ok := exp.(*ast.NumberLiteral)
+	num, ok := exp.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
@@ -152,7 +152,7 @@ func TestParseNestedParentheses(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	num, ok := exp.(*ast.NumberLiteral)
+	num, ok := exp.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
@@ -416,7 +416,7 @@ func TestParseZero(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	num, ok := exp.(*ast.NumberLiteral)
+	num, ok := exp.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
@@ -430,7 +430,7 @@ func TestParseLargeNumber(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	num, ok := exp.(*ast.NumberLiteral)
+	num, ok := exp.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", exp)
 	}
@@ -525,7 +525,7 @@ func TestParseAssignmentSimple(t *testing.T) {
 	if assign.LHS.TokenLiteral.Literal != "x" {
 		t.Errorf("expected LHS identifier 'x', got '%s'", assign.LHS.TokenLiteral.Literal)
 	}
-	numLit, ok := assign.Rhs.(*ast.NumberLiteral)
+	numLit, ok := assign.Rhs.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected RHS to be NumberLiteral, got %T", assign.Rhs)
 	}
@@ -654,7 +654,7 @@ func TestParseAssignmentZeroRHS(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected Assignement, got %T", exp)
 	}
-	numLit, ok := assign.Rhs.(*ast.NumberLiteral)
+	numLit, ok := assign.Rhs.(*ast.Number)
 	if !ok {
 		t.Fatalf("expected RHS to be NumberLiteral, got %T", assign.Rhs)
 	}

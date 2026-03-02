@@ -22,7 +22,7 @@ func Parse(tokens []ast.Token) (ast.Expression, error) {
 
 	if match(ast.VAR) {
 		statement = varDeclaration()
-	} else if match(ast.IDENTIFIER) && match_next(ast.EQUAL) {
+	} else if match(ast.IDENTIFIER_LITERAL) && match_next(ast.EQUAL) {
 		statement = assignement()
 	} else {
 		statement = expression()
@@ -64,16 +64,16 @@ func assignement() ast.Expression {
 	return &ast.Assignement{LHS: lhs, Rhs: rhs}
 }
 
-func identifier() ast.IdentifierLiteral {
+func identifier() ast.Identifier {
 	if isAtEnd() {
 		parseError = fmt.Errorf("unexpected end of input at position %d: expected identifier", current)
-		return ast.IdentifierLiteral{}
+		return ast.Identifier{}
 	}
-	if !match(ast.IDENTIFIER) {
+	if !match(ast.IDENTIFIER_LITERAL) {
 		parseError = fmt.Errorf("unexpected token '%s' at position %d: expected identifier", Tokens[current].Literal, current)
-		return ast.IdentifierLiteral{}
+		return ast.Identifier{}
 	}
-	return ast.IdentifierLiteral{TokenLiteral: consume()}
+	return ast.Identifier{TokenLiteral: consume()}
 }
 func expression() ast.Expression {
 	return term()
@@ -119,7 +119,7 @@ func unary() ast.Expression {
 		parseError = fmt.Errorf("unexpected end of input: expected NUMBER or expression")
 		return nil
 	}
-	if match(ast.NUMBER) || match(ast.Open_Parentheses) || match(ast.IDENTIFIER) {
+	if match(ast.NUMBER_LITERAL) || match(ast.Open_Parentheses) || match(ast.IDENTIFIER_LITERAL) {
 		return primary()
 	}
 	if match(ast.Minus) {
@@ -159,13 +159,13 @@ func primary() ast.Expression {
 		consume()
 		return exp
 	}
-	if match(ast.NUMBER) {
+	if match(ast.NUMBER_LITERAL) {
 		token := consume()
-		return &ast.NumberLiteral{TokenLiteral: token}
+		return &ast.Number{TokenLiteral: token}
 	}
-	if match(ast.IDENTIFIER) {
+	if match(ast.IDENTIFIER_LITERAL) {
 		token := consume()
-		return &ast.IdentifierLiteral{TokenLiteral: token}
+		return &ast.Identifier{TokenLiteral: token}
 	}
 	parseError = fmt.Errorf("unexpected token '%s' at position %d: expected NUMBER or '('", Tokens[current].Literal, current)
 	return nil
@@ -183,7 +183,7 @@ func match(tokenType ast.TokenType) bool {
 }
 
 func match_next(tokenType ast.TokenType) bool {
-	if current >= len(input)-1 {
+	if current+1 >= len(input) {
 		return false
 	}
 	return Tokens[current+1].Token == tokenType

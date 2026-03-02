@@ -1,7 +1,7 @@
 package ast
 
 type VarDeclaration struct {
-	Operand IdentifierLiteral
+	Operand Identifier
 }
 
 func (this *VarDeclaration) accept() interface{} {

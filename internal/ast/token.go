@@ -8,14 +8,14 @@ type Token struct {
 }
 
 const (
-	Plus              TokenType = "+"
-	Minus             TokenType = "-"
-	Multiplication    TokenType = "*"
-	Division          TokenType = "/"
-	Open_Parentheses  TokenType = "("
-	Close_Parentheses TokenType = ")"
-	NUMBER            TokenType = "\\d*"
-	IDENTIFIER        TokenType = "_[a-zA-Z]"
-	EQUAL             TokenType = "="
-	VAR               TokenType = "var"
+	Plus               TokenType = "+"
+	Minus              TokenType = "-"
+	Multiplication     TokenType = "*"
+	Division           TokenType = "/"
+	Open_Parentheses   TokenType = "("
+	Close_Parentheses  TokenType = ")"
+	NUMBER_LITERAL     TokenType = "\\d*"
+	IDENTIFIER_LITERAL TokenType = "_[a-zA-Z]"
+	EQUAL              TokenType = "="
+	VAR                TokenType = "var"
 )
