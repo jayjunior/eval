@@ -161,7 +161,7 @@ func primary() ast.Expression {
 	}
 	if match(ast.NUMBER_LITERAL) {
 		token := consume()
-		return &ast.Number{TokenLiteral: token}
+		return &ast.CONSTANT{TokenLiteral: token}
 	}
 	if match(ast.IDENTIFIER_LITERAL) {
 		token := consume()

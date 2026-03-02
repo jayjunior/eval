@@ -32,7 +32,7 @@ func (this *Printer) visit(exp ast.Expression, prefix string, isLast bool) {
 	case *ast.UnaryExpression:
 		this.builder.WriteString(prefix + connector + "UnaryExpr (" + e.Operator.Literal + ")\n")
 		this.visit(e.Operand, childPrefix, true)
-	case *ast.Number:
+	case *ast.CONSTANT:
 		this.builder.WriteString(prefix + connector + "Number: " + e.TokenLiteral.Literal + "\n")
 	}
 }
