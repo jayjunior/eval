@@ -1,11 +1,11 @@
 package ast
 
 type BinaryExpression struct {
-    Lhs      Expression
-    Operator Token
-    Rhs      Expression
+	Lhs      Expression
+	Operator Token
+	Rhs      Expression
 }
 
-func (this *BinaryExpression) accept() interface{} {
-    return nil
+func (this *BinaryExpression) accept(visitor Visitor) (string, error) {
+	return visitor.visit(this)
 }

@@ -5,6 +5,6 @@ type Assignement struct {
 	Rhs Expression
 }
 
-func (this *Assignement) accept() interface{} {
-	return nil
+func (this *Assignement) accept(visitor Visitor) (string, error) {
+	return visitor.visit(this)
 }

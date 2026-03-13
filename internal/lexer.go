@@ -64,8 +64,8 @@ func consume_char() byte {
 func number() {
 	digit := ""
 	isFloat := false
-	for !isEnd() && (isDigit(rune(peek_char())) || peek_char() == '.') {
-		if peek_char() == '.' {
+	for !isEnd() && (isDigit(rune(peek_char())) || peek_char() == '.' || peek_char() == 'e' || peek_char() == 'E') {
+		if peek_char() == '.' || peek_char() == 'e' || peek_char() == 'E' {
 			digit += string(consume_char())
 			isFloat = true
 			break

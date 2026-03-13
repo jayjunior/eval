@@ -1,17 +1,16 @@
-package visitors
+package ast
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/jayjunior/eval/internal/ast"
 )
 
 type Printer struct {
 	builder strings.Builder
 }
 
-func (this *Printer) visit(exp ast.Expression, prefix string, isLast bool) {
+func (this *Printer) visit(exp Expression, prefix string, isLast bool) {
 	connector := "├── "
 	if isLast {
 		connector = "└── "
@@ -25,26 +24,26 @@ func (this *Printer) visit(exp ast.Expression, prefix string, isLast bool) {
 	}
 
 	switch e := exp.(type) {
-	case *ast.BinaryExpression:
+	case *BinaryExpression:
 		this.builder.WriteString(prefix + connector + "BinaryExpr (" + e.Operator.Literal + ")\n")
 		this.visit(e.Lhs, childPrefix, false)
 		this.visit(e.Rhs, childPrefix, true)
-	case *ast.UnaryExpression:
+	case *UnaryExpression:
 		this.builder.WriteString(prefix + connector + "UnaryExpr (" + e.Operator.Literal + ")\n")
 		this.visit(e.Operand, childPrefix, true)
-	case *ast.CONSTANT:
+	case *CONSTANT:
 		this.builder.WriteString(prefix + connector + "Number: " + e.TokenLiteral.Literal + "\n")
 	}
 }
 
-func (this *Printer) print(exp ast.Expression) string {
+func (this *Printer) print(exp Expression) string {
 	this.builder.Reset()
 	this.builder.WriteString("Expression\n")
 	this.visit(exp, "", true)
 	return this.builder.String()
 }
 
-func (this *Printer) PrintAST(exp ast.Expression) {
+func (this *Printer) PrintAST(exp Expression) {
 	fmt.Print(this.print(exp))
 }
 

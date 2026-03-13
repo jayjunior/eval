@@ -1,5 +1,5 @@
 package ast
 
 type Expression interface {
-	accept() interface{}
+	accept(visitor Visitor) (string, error)
 }

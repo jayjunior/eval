@@ -11,7 +11,7 @@ primary        → NUMBER | TRUE | FALSE
                | IDENTIFIER
 
 VAR = "var"
-NUMBER = [0-9]+(\.[0-9]+)?
+NUMBER = [0-9]+ | [0-9]+((\.|e)[0-9]+)?
 IDENTIFIER = "(_ | [a-zA-Z])+"
 EQUAL = "="
 TRUE = "true"

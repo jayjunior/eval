@@ -6,10 +6,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/jayjunior/eval/internal/ast"
 	"github.com/jayjunior/eval/internal"
-	"github.com/jayjunior/eval/internal/visitors"
 )
-var evaluator = visitors.Evaluator{}
+var evaluator = ast.Evaluator{}
 
 func main() {
 	if len(os.Args) >= 2 {
