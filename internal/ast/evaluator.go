@@ -2,6 +2,7 @@ package ast
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 )
 
@@ -50,10 +51,14 @@ func (this *Evaluator) visit(exp Expression) (string, error) {
 		return e.TokenLiteral.Literal, nil
 	case *Identifier:
 		operand := e.TokenLiteral.Literal
-		if _, exist := this.identifiers[operand]; !exist {
-			return "", fmt.Errorf("undeclared identifier %s", operand)
+
+		if _, exist := this.identifiers[operand]; exist {
+			return this.identifiers[operand] , nil
 		}
-		return this.identifiers[operand], nil
+		if value , exist := os.LookupEnv(operand) ; exist {
+			return value , nil;
+		}
+		return "", fmt.Errorf("undeclared identifier %s", operand)
 	}
 	return "", nil
 }
